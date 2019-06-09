@@ -248,4 +248,3 @@ plt.title("Высота РН", fontsize="15")
 plt.xlabel("Время, с")
 plt.ylabel("Высота, м")
 plt.show()
-
