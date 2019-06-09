@@ -93,7 +93,7 @@ def fuel4(t, y):
 def angle(x, y):
     angle = 90
     h = math.sqrt(x*x + y*y) - R
-    H = (10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 70000, 75000, 80000, 90000, 100000, 110000, 175000, 185000)
+    H = (10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 70000, 75000, 80000, 90000, 100000, 110000, 185000, 198000)
     ang = (0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85)
     for i in range(16):
         if h <= H[i]:
@@ -224,7 +224,16 @@ f.set_initial_value(y3, t3)
 f.set_solout(fuel4)
 f.integrate(10000)
 
-print((M3_fuel - force3/f_vel3 * (t3 - t2))/ M3_fuel)
+
+x, vx, y, vy = y3
+dm = (M3_fuel - force3/f_vel3 * (t3 - t2)) / M3_fuel
+h = math.sqrt(x**2 + y**2)
+nx, ny = math.cos(math.atan(x/y)), math.sin(math.atan(x/y))
+w = math.sqrt(vx**2 + vy**2 - (ny * vx + nx * vy)**2) / h
+phi = math.atan(x/y)
+f = open("BlastOffFromEarth.txt", 'w')
+print(dm, w, h, t3, phi, file=f)
+f.close()
 
 xc, yc = [], [] # рисует окружность Земли для графика
 for i in range(0, 630):
