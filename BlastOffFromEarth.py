@@ -25,13 +25,13 @@ We = 7.29 * 10 ** (-5)
 G = 6.67408 * 10 ** (-11)
 R = 6375000  # m
 h = 350000
-vt = []
-vr = []
+vt_ = []
+vr_ = []
 xs = []
 ys = []
 xsf = []
 ysf = []
-h = []
+h_ = []
 t_ = []
 
 
@@ -39,9 +39,9 @@ def fuel1(t, y):
     global xs, ys, force1, M_total, M1_fuel, f_vel1
     xs.append(y[0])
     ys.append(y[2])
-    h.append(math.sqrt(y[0]**2 + y[2]**2) - R)
-    # vr.append(y[1] * math.sin(math.pi - math.atan(y[2] / y[0])) + y[3] * math.sin(math.pi - math.atan(y[0] / y[2])))
-    # vt.append(- (y[1]*math.cos(math.pi - math.atan(y[2]/y[0])) + y[3]*math.cos(math.pi - math.atan(y[0]/y[2]))))
+    h_.append(math.sqrt(y[0]**2 + y[2]**2) - R)
+    vr_.append(- (y[1]*math.cos(math.pi - math.atan(y[2]/y[0])) + y[3]*math.cos(math.pi - math.atan(y[0]/y[2]))))
+    vt_.append(math.sqrt(y[1]**2 + y[3]**2 - vr_[-1] **2 ))
     t_.append(t)
     v = - (y[1] * math.cos(math.pi - math.atan(y[2] / y[0])) + y[3] * math.cos(math.pi - math.atan(y[0] / y[2])))
     print(v)
@@ -54,9 +54,9 @@ def fuel2(t, y):
     global xs, ys, force2, M_total, f_vel2
     xs.append(y[0])
     ys.append(y[2])
-    h.append(math.sqrt(y[0]**2 + y[2]**2) - R)
-    vr.append(y[1] * math.sin(math.pi - math.atan(y[2] / y[0])) + y[3] * math.sin(math.pi - math.atan(y[0] / y[2])))
-    vt.append(- (y[1]*math.cos(math.pi - math.atan(y[2]/y[0])) + y[3]*math.cos(math.pi - math.atan(y[0]/y[2]))))
+    h_.append(math.sqrt(y[0]**2 + y[2]**2) - R)
+    vr_.append(- (y[1]*math.cos(math.pi - math.atan(y[2]/y[0])) + y[3]*math.cos(math.pi - math.atan(y[0]/y[2]))))
+    vt_.append(math.sqrt(y[1] ** 2 + y[3] ** 2 - vr_[-1] ** 2))
     t_.append(t)
     v = - (y[1] * math.cos(math.pi - math.atan(y[2] / y[0])) + y[3] * math.cos(math.pi - math.atan(y[0] / y[2])))
     print(v)
@@ -70,10 +70,10 @@ def fuel3(t, y):
     global xs, ys, M_total, f_vel3
     xs.append(y[0])
     ys.append(y[2])
-    # h.append(math.sqrt(y[0]**2 + y[2]**2) - R)
-    # vr.append(y[1] * math.sin(math.pi - math.atan(y[2] / y[0])) + y[3] * math.sin(math.pi - math.atan(y[0] / y[2])))
-    # vt.append(- (y[1]*math.cos(math.pi - math.atan(y[2]/y[0])) + y[3]*math.cos(math.pi - math.atan(y[0]/y[2]))))
-    # t_.append(t)
+    h_.append(math.sqrt(y[0]**2 + y[2]**2) - R)
+    vr_.append(- (y[1]*math.cos(math.pi - math.atan(y[2]/y[0])) + y[3]*math.cos(math.pi - math.atan(y[0]/y[2]))))
+    vt_.append(math.sqrt(y[1] ** 2 + y[3] ** 2 - vr_[-1] ** 2))
+    t_.append(t)
     h = math.sqrt(y[0]**2 + y[2]**2)
     v = - (y[1]*math.cos(math.pi - math.atan(y[2]/y[0])) + y[3]*math.cos(math.pi - math.atan(y[0]/y[2])))
     vr = y[1] * math.sin(math.pi - math.atan(y[2] / y[0])) + y[3] * math.sin(math.pi - math.atan(y[0] / y[2]))
@@ -218,7 +218,6 @@ print("free flight")
 print(math.sqrt(y3[0] ** 2 + y3[2] ** 2) - R, math.sqrt(y3[1] ** 2 + y3[3] ** 2))
 
 f = ode(free_flight)
-
 f.set_integrator('dopri5')
 f.set_initial_value(y3, t3)
 f.set_solout(fuel4)
@@ -250,10 +249,19 @@ with plt.style.context("dark_background"):
     plt.plot(xs, ys, linewidth='4', color="#FFD6F9")
     plt.plot(xsf, ysf, color='#E8DAD5', alpha=0.8, linewidth='0.5')
     plt.title("Выход на Низкую Околоземную орбиту", fontsize="15")
-plt.show()
-graph1 = plt.figure()
-plt.plot(t_, h)
-plt.title("Высота РН", fontsize="15")
-plt.xlabel("Время, с")
-plt.ylabel("Высота, м")
-plt.show()
+    plt.show()
+    graph1 = plt.figure()
+    graph1.add_subplot(311)
+    plt.plot(t_, h_)
+    plt.title("Высота РН", fontsize="15")
+    plt.ylabel("Высота, м")
+    graph1.add_subplot(312)
+    plt.plot(t_, vr_)
+    plt.title("Радиальная скорость", fontsize="15")
+    plt.ylabel("Скорость, м/с")
+    graph1.add_subplot(313)
+    plt.plot(t_, vt_)
+    plt.title("Тангенциальная скорость", fontsize="15")
+    plt.xlabel("Время, с")
+    plt.ylabel("Скорость, м/с")
+    plt.show()
