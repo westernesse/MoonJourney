@@ -1,6 +1,7 @@
 ﻿import numpy as np
 import matplotlib.pyplot as plt
 import math as m
+import random
 
 from scipy.integrate import ode
 
@@ -8,7 +9,7 @@ arr = np.loadtxt("before STOP.txt", delimiter='\t', dtype=np.float)
 h = arr[0] #70000 высота над поверхностью земли из файла
 vx0 = arr[1] # (mu/(h+R_Earth))**0.5 скорость по орбите
 vy0 = arr[2] #0
-print(h,vx0,vy0)
+#print(h,vx0,vy0)
 
 G=6.67e-11
 totalTime=0
@@ -27,7 +28,7 @@ result = open('landing Earth.txt', 'w')
 result.close()
 
 def Safety(F1, F2, F3):
-    np = 50000*(F1 + F2 + F3)**0.5/(TotalMass*g_Earth) #в относительных единицах
+    np = (F1 + F2 + F3)**0.5/(TotalMass*g_Earth) #в относительных единицах
     if np>=10:
         print ("Pilot is dead ;C ", np)
     overload.append(np)
@@ -40,6 +41,7 @@ def fout1(t, y):# обработчик шага
         y1, y2, y3, y4 = y
         if m.sqrt(y2*y2+y4*y4)<=300 and (m.sqrt(y1*y1 +y3*y3) - R_Earth)<10000:
           return -1
+      
 def rho(x,y):
     '''с помощью линейной апроксимации определяет плотность воздуха на необходимой нам высоте'''
     Space = [0, 1.85 * 0.00001, 1.5*0.0001, 3 * 0.0001, 1.03 * 0.001, 4 * 0.001, 7.26 * 0.001, 0.0136, 0.0251, 0.0469, 0.0889, 0.1216, 0.1665, 0.2279, 0.3119, 0.3648, 0.4135, 0.4671, 0.5258, 0.59, 0.6601, 0.7365, 0.8194, 0.9093, 1,1.1]
@@ -64,7 +66,7 @@ def rho(x,y):
     return p
 
 def tangage_angle(x,y):
-    Space_lst = [70000, 68000, 55000, 50000, 30000, 10000]
+    Space_lst = [80000, 70000, 60000, 50000, 30000, 10000]
     angle_lst = [6.5, 6.5, 6.4, 6.3, 6.2, 6.1]
     Cy_lst = np.zeros(7)
     Cy_lst[0] = 0.134*0.85*m.cos(6.5*m.pi/180)
@@ -108,26 +110,43 @@ y_start = h + R_Earth
 Vy_start = -vy0
 
 xc,yc=[],[]
-for i in range(100, 159):
-    xc.append(R_Earth*m.cos(i/100))
-    yc.append(R_Earth*m.sin(i/100))
+for i in range(90, 159):
+    xc.append(0.001*R_Earth*m.cos(i/100))
+    yc.append(0.001*R_Earth*m.sin(i/100))
 tmax = 100000
     
 y0,t0=[x_start,  Vx_start, y_start, Vy_start], 0 # начальные условия 
 ODE=ode(f1)
-ODE.set_integrator('dopri5')#, max_step=0.01)
+ODE.set_integrator('dopri5')
 ODE.set_solout(fout1)
 ts, ys = [ ],[ ]
 ODE.set_initial_value(y0, t0) # задание начальных значений
 ODE.integrate(tmax)      # решение ОДУ
 Y=np.array(ys)
-
+xgraph = Y[:,0]/1000
+ygraph = Y[:,2]/1000
 
 plt.style.use('dark_background')
 plt.title("Торможение в атмосфере \n ")
-plt.plot(Y[:,0],Y[:,2],linewidth=2,color='lightcoral')
+x = np.zeros(39)
+y = np.zeros(39)
+for i in range(39):
+    if i<27:
+        x[i] = i*100
+        y[i] = random.randint(6375, 7000)
+    else:
+        x[i] = i*100 
+        y[i] = random.randint(5500, 7000)       
+    
+plt.plot(x, y, marker ="*", c="white", linestyle=" ")
+plt.plot(xgraph, ygraph, linewidth=2, color='lightcoral')
 plt.axis('equal')
-plt.plot(xc,yc,linewidth=3, color='olivedrab')
+plt.text (1000, 5000, u'the Earth', size=40, color="bisque")
+plt.plot(xc, yc, linewidth=3, color='olivedrab')
+plt.xlim(0, 3500)
+plt.ylim(5000, 7000)
+plt.xlabel('X, км')
+plt.ylabel('Y, км')
 plt.grid(False)
 plt.show()
 
