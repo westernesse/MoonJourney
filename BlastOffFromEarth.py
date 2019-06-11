@@ -34,6 +34,7 @@ ysf = []
 h_ = []
 t_ = []
 
+
 def fuel1(t, y):
     global xs, ys, force1, M_total, M1_fuel, f_vel1
     xs.append(y[0])
