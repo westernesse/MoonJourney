@@ -213,23 +213,22 @@ x_m=r0*ms.sin(Y[-1][4])
 y_m=r0*ms.cos(Y[-1][4])
 x,y=Y[-1][0],Y[-1][1]
 print(b-rm,a-rm)
-print(Y[-1])
 V=np.sqrt((Y[-1][2]-w0*r0*ms.cos(Y[-1][4]))**2+(Y[-1][3]+w0*r0*ms.sin(Y[-1][4]))**2)
-print(V)
-print(np.sqrt(const2*2/(b+a)))
+print("Velosity:",V)
+print("Orbital velosity:",np.sqrt(const2*2/(b+a)))
 t_spent=t0+t1+t2+t3+t4+t5+t6+t7+t_pr #time spent on stages 1 and 2
-print(t_spent)
+print("Time of expedition:",t_spent)
 H=np.sqrt(xs1[-1]**2+ys1[-1]**2)-rm
-print(H)
+print("Height: ",H)
 #Выходные данные в исходной системе координат
 # В исходной системе координат ось Ох направлена к центру Луны до взлета с Земли, ось Оу соноправлена с тангенсальной скорость Луны до взлета ракеты
 X_m=x_m*ms.cos(teta)+y_m*ms.sin(teta)
 Y_m=(-x_m*ms.sin(teta)+y_m*ms.cos(teta))*(-1)
 X=x*ms.cos(teta)+y*ms.sin(teta)
 Y=(-x*ms.sin(teta)+y*ms.cos(teta))*(-1)
-print(X_m,Y_m,X,Y)
+print('Final coordinates:',X_m,Y_m,X,Y)
 F_spent=(t4+t6)*mu # spent Fuel
-print(F_spent)
+print('sent Fuel:',F_spent)
 W=(-V/(rm+H)) #положительное направление вращения-направление вращения луны
 out.write(str(X)+' '+str(Y)+' '+str(X_m)+' '+str(Y_m)+' '+str(W)+' '+str(F_spent)+' '+str(t_spent))
 out.close()
