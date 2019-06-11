@@ -22,7 +22,7 @@ X, Y, R, V, A, T = [], [], [], [], [], []
 
 file = open('FromEarthToMoonOut.txt').readlines()
 prev = array([[float(i) for i in file[j].split()] for j in range((len(file)))])
-x_Moon, y_Moon, x_ship, y_ship = ((prev[0][0])/1000), ((prev[0][1])/1000), ((prev[0][2])/1000), ((prev[0][3])/1000)
+x_Moon, y_Moon, x_ship, y_ship, FullT = ((prev[0][0])/1000), ((prev[0][1])/1000), ((prev[0][2])/1000), ((prev[0][3])/1000), prev[0][6]
 
 def change_coordinates (x_Moon, y_Moon, x_ship, y_ship):
     New_x =(x_ship - x_Moon)*(y_Moon/sqrt(x_Moon**2 + y_Moon**2)) - (y_ship - y_Moon)*(x_Moon/sqrt(x_Moon**2 + y_Moon**2))
@@ -292,7 +292,8 @@ def go(x_0, y_0):
     print("Место стыковки: x =", round(x, 4), "y =", round(y, 4), "Скорость на орбите: v =", round(
     V4, 4), "Высота орбиты =", round(H4, 4), "Масса топлива =", round(m_fuel_2, 4))
     Esc_moon = open("Escaping from moon.txt", 'w')
-    Esc_moon.write(str(x) + "\n" + str(y) + "\n" + str(sqrt(Vx ** 2 + Vy ** 2)) + "\n" + str(sqrt(x ** 2 + y ** 2)))
+    Esc_moon.write(str(x) + "\n" + str(y) + "\n" + str(sqrt(Vx ** 2 + Vy ** 2)) + "\n" + str(sqrt(x ** 2 + y ** 2))
+                   + "\n" + str(t_overall + 6851 + FullT))
     Esc_moon.close()
     drawing(X, Y, R, V, T)
     return (V4, H4, m_fuel_2)
@@ -343,7 +344,7 @@ x_lk = - R_orbit * sin(position_of_lk / R_orbit)
 print("Чилим на луне 1,76 часа ♫ ℂℍℐℒℒ ♫")
 
 def vzlet():
-    tau = 6410
+    tau = 6851
     position_of_lk1 = (decel_startco + V_orbit * (
     ((R_orbit * (asin(-314074.3951 / R_orbit) + 2 * pi) - decel_startco) / V_orbit))) % (2 * pi * R_orbit)
     y_lk1 = R_orbit * cos(position_of_lk1 / R_orbit)
