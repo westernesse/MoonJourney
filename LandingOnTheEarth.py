@@ -28,7 +28,7 @@ result = open('landing Earth.txt', 'w')
 result.close()
 
 def Safety(F1, F2, F3):
-    np = (F1 + F2 + F3)**0.5/(TotalMass*g_Earth) #в относительных единицах
+    np = (F1**2 + F2**2 + F3**2)**0.5/(TotalMass*g_Earth) #в относительных единицах
     if np>=10:
         print ("Pilot is dead ;C ", np)
     overload.append(np)
@@ -102,7 +102,7 @@ def f1(t, y):
          result.write(str(r) + '\t' + str(m.sqrt(vv)) + '\t' +
                       str(m.sqrt(ax**2 +ay**2)) + '\t' + str(t) + '\n')
          result.close()
-         return [y2,ax, y4,ay] 
+         return [y2, ax, y4, ay] 
      
 x_start = 0
 Vx_start = vx0
