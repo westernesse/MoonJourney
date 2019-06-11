@@ -66,7 +66,7 @@ def fout3(t,y):
         y_m=y2-r0*ms.cos(y5)
         x_m=y1-r0*ms.sin(y5)
         ux_m=y3-w0*r0*ms.cos(y5)
-        uy_m=y4-w0*r0*ms.sin(y5)
+        uy_m=y4+w0*r0*ms.sin(y5)
         YYY.append([x_m,y_m,ux_m,uy_m])
         
 def fout4(t,y):
@@ -76,7 +76,7 @@ def fout4(t,y):
         y_m=y2-r0*ms.cos(y5)
         x_m=y1-r0*ms.sin(y5)
         ux_m=y3-w0*r0*ms.cos(y5)
-        uy_m=y4-w0*r0*ms.sin(y5)
+        uy_m=y4+w0*r0*ms.sin(y5)
         r=np.sqrt(x_m**2+y_m**2)
         arr.append(r)
         YYY.append([x_m,y_m,ux_m,uy_m])
@@ -152,8 +152,6 @@ arr=[]
 #свободный полет до начала торможения
 x,y,ux,uy,alphaM=list(Y[-1])       
 Y0,t0=[x,y,ux,uy,alphaM],0
-ODE=ode(fun)
-ODE.set_integrator('dopri5')#, max_step=0.01)
 ODE.set_solout(fout3)
 ODE.set_initial_value(Y0, t0) # задание начальных значений
 ODE.integrate(t3)
@@ -161,8 +159,6 @@ ODE.integrate(t3)
 x,y,ux,uy,alphaM=list(YY[-1])
 Y0,t0=[x,y,ux,uy,alphaM],0
 p=-1
-ODE=ode(fun)
-ODE.set_integrator('dopri5')#, max_step=0.01)
 ODE.set_solout(fout3)
 ODE.set_initial_value(Y0, t0) # задание начальных значений
 ODE.integrate(t4)
@@ -173,8 +169,6 @@ t5=12915
 ts=[]
 x,y,ux,uy,alphaM=list(YY[-1])
 Y0,t0=[x,y,ux,uy,alphaM],0
-ODE=ode(fun)
-ODE.set_integrator('dopri5')#, max_step=0.01)
 ODE.set_solout(fout4)
 ODE.set_initial_value(Y0, t0) # задание начальных значений
 ODE.integrate(t5)
@@ -183,8 +177,6 @@ x,y,ux,uy,alphaM=list(YY[-1])
 Y0,t0=[x,y,ux,uy,alphaM],0
 p=-1
 t6=2.01
-ODE=ode(fun)
-ODE.set_integrator('dopri5')#, max_step=0.01)
 ODE.set_solout(fout3)
 ODE.set_initial_value(Y0, t0) # задание начальных значений
 ODE.integrate(t6)
@@ -195,8 +187,6 @@ t7=8000
 arr=[]
 x,y,ux,uy,alphaM=list(YY[-1])
 Y0,t0=[x,y,ux,uy,alphaM],0
-ODE=ode(fun)
-ODE.set_integrator('dopri5')#, max_step=0.01)
 ODE.set_solout(fout4)
 ODE.set_initial_value(Y0, t0) # задание начальных значений
 ODE.integrate(t7)
@@ -219,14 +209,11 @@ plt.axis('equal')
 plt.grid(True)
 plt.show()
 
-
 x_m=r0*ms.sin(Y[-1][4])
 y_m=r0*ms.cos(Y[-1][4])
 x,y=Y[-1][0],Y[-1][1]
 print(b-rm,a-rm)
 print(Y[-1])
-print(r0*ms.sin(Y[-1][4]),r0*ms.cos(Y[-1][4]))
-print(np.sqrt((x-x_m)**2+(y-y_m)**2))
 V=np.sqrt((Y[-1][2]-w0*r0*ms.cos(Y[-1][4]))**2+(Y[-1][3]+w0*r0*ms.sin(Y[-1][4]))**2)
 print(V)
 print(np.sqrt(const2*2/(b+a)))
