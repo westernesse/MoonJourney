@@ -43,8 +43,6 @@ def fuel1(t, y):
     vr_.append(- (y[1]*math.cos(math.pi - math.atan(y[2]/y[0])) + y[3]*math.cos(math.pi - math.atan(y[0]/y[2]))))
     vt_.append(math.sqrt(y[1]**2 + y[3]**2 - vr_[-1] **2 ))
     t_.append(t)
-    v = - (y[1] * math.cos(math.pi - math.atan(y[2] / y[0])) + y[3] * math.cos(math.pi - math.atan(y[0] / y[2])))
-    print(v)
     if M1_fuel - force1/f_vel1 * t <= 0.001:
         M_total -= M1 + M1_fuel
         print("First stage detached")
@@ -59,11 +57,9 @@ def fuel2(t, y):
     vt_.append(math.sqrt(y[1] ** 2 + y[3] ** 2 - vr_[-1] ** 2))
     t_.append(t)
     v = - (y[1] * math.cos(math.pi - math.atan(y[2] / y[0])) + y[3] * math.cos(math.pi - math.atan(y[0] / y[2])))
-    print(v)
     if M2_fuel - force2/f_vel2 * t <= 0.001:
         M_total -= M2 + M2_fuel
         print("Second stage detached")
-        print(math.sqrt(y[0]**2 + y[2]**2) - R)
 
 
 def fuel3(t, y):
@@ -78,10 +74,7 @@ def fuel3(t, y):
     v = - (y[1]*math.cos(math.pi - math.atan(y[2]/y[0])) + y[3]*math.cos(math.pi - math.atan(y[0]/y[2])))
     vr = y[1] * math.sin(math.pi - math.atan(y[2] / y[0])) + y[3] * math.sin(math.pi - math.atan(y[0] / y[2]))
     v1 = math.sqrt(G * Me / h)
-    print(vr, v1, v)
-    if  abs(vr) > v1 :
-        print("wow")
-        print(t, h - R)
+
 
 
 def fuel4(t, y):
@@ -215,7 +208,7 @@ y3 = f.integrate(487.5)
 t3 = 487.5
 
 print("free flight")
-print(math.sqrt(y3[0] ** 2 + y3[2] ** 2) - R, math.sqrt(y3[1] ** 2 + y3[3] ** 2))
+print("Height: ",math.sqrt(y3[0] ** 2 + y3[2] ** 2) - R, ", Velocity: ", math.sqrt(y3[1] ** 2 + y3[3] ** 2), ", Fuel left: ", (M3_fuel - force3/f_vel3 * (t3 - t2)) / M3_fuel, sep="")
 
 f = ode(free_flight)
 f.set_integrator('dopri5')
