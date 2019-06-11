@@ -55,7 +55,6 @@ def fuel2(t, y):
     vr_.append(- (y[1]*math.cos(math.pi - math.atan(y[2]/y[0])) + y[3]*math.cos(math.pi - math.atan(y[0]/y[2]))))
     vt_.append(math.sqrt(y[1] ** 2 + y[3] ** 2 - vr_[-1] ** 2))
     t_.append(t)
-    v = - (y[1] * math.cos(math.pi - math.atan(y[2] / y[0])) + y[3] * math.cos(math.pi - math.atan(y[0] / y[2])))
     if M2_fuel - force2/f_vel2 * t <= 0.001:
         M_total -= M2 + M2_fuel
         print("Second stage detached")
@@ -70,10 +69,6 @@ def fuel3(t, y):
     vt_.append(math.sqrt(y[1] ** 2 + y[3] ** 2 - vr_[-1] ** 2))
     t_.append(t)
     h = math.sqrt(y[0]**2 + y[2]**2)
-    v = - (y[1]*math.cos(math.pi - math.atan(y[2]/y[0])) + y[3]*math.cos(math.pi - math.atan(y[0]/y[2])))
-    vr = y[1] * math.sin(math.pi - math.atan(y[2] / y[0])) + y[3] * math.sin(math.pi - math.atan(y[0] / y[2]))
-    v1 = math.sqrt(G * Me / h)
-
 
 
 def fuel4(t, y):
@@ -116,7 +111,7 @@ def atm_dens(x, y):
 def launch1(t, y):  # Запуск первой ступени
     global f_vel1, M1, M1_fuel, M_total, force1, d1
     X, X1, Y, Y1 = y
-    ang = angle(X, Y) + math.atan(X/Y)
+    ang = angle(X, Y) + math.atan(-Y/X)
     S = math.pi * d1 ** 2 / 4  # Параметры для силы сопротивления
     C = 0.1
     v2 = X1**2 + Y1**2
@@ -125,8 +120,8 @@ def launch1(t, y):  # Запуск первой ступени
     a = force1/(M_total - dM_fuel)
     res = C*S*v2*D / 2     # сила сопротивления
 
-    ax = - X * G * Me / ((X*X + Y*Y) ** 1.5) + (a - res) * math.sin(ang)
-    ay = - Y * G * Me / ((X*X + Y*Y) ** 1.5) + (a - res) * math.cos(ang)
+    ax = - X * G * Me / ((X*X + Y*Y) ** 1.5) + (a - res) * math.cos(ang)
+    ay = - Y * G * Me / ((X*X + Y*Y) ** 1.5) - (a - res) * math.sin(ang)
 
     return [X1, ax, Y1, ay]
 
@@ -134,7 +129,7 @@ def launch1(t, y):  # Запуск первой ступени
 def launch2(t, y):  # Запуск второй ступени
     global f_vel2, M2, M2_fuel, M_total, force2, d2
     X, X1, Y, Y1 = y
-    ang = angle(X, Y) + math.atan(X/Y)
+    ang = angle(X, Y) + math.atan(-Y/X)
     S = math.pi * d2 ** 2 / 4
     C = 0.1
     v2 = X1**2 + Y1**2
@@ -144,8 +139,8 @@ def launch2(t, y):  # Запуск второй ступени
     a = force2/(M_total - dM_fuel)
 
     res = C*S*v2*D / 2
-    ax = - X * G * Me / ((X*X + Y*Y) ** 1.5) + (a - res) * math.sin(ang)
-    ay = - Y * G * Me / ((X*X + Y*Y) ** 1.5) + (a - res) * math.cos(ang)
+    ax = - X * G * Me / ((X*X + Y*Y) ** 1.5) + (a - res) * math.cos(ang)
+    ay = - Y * G * Me / ((X*X + Y*Y) ** 1.5) - (a - res) * math.sin(ang)
 
     return [X1, ax, Y1, ay]
 
@@ -153,7 +148,7 @@ def launch2(t, y):  # Запуск второй ступени
 def launch3(t, y):  # Запуск третьей ступени
     global f_vel3, M3, M3_fuel, M_total, force3, d3
     X, X1, Y, Y1 = y
-    ang = angle(X, Y) + math.atan(X/Y)
+    ang = angle(X, Y) + math.atan(-Y/X)
     S = math.pi * d3 ** 2 / 4  # Параметры для силы сопротивления
     C = 0.1
     v2 = X1**2 + Y1**2
@@ -163,8 +158,8 @@ def launch3(t, y):  # Запуск третьей ступени
     a = force3/(M_total - dM_fuel)
     res = C*S*v2*D / 2     # сила сопротивления
 
-    ax = - X * G * Me / ((X*X + Y*Y) ** 1.5) + (a - res) * math.sin(ang)
-    ay = - Y * G * Me / ((X*X + Y*Y) ** 1.5) + (a - res) * math.cos(ang)
+    ax = - X * G * Me / ((X*X + Y*Y) ** 1.5) + (a - res) * math.cos(ang)
+    ay = - Y * G * Me / ((X*X + Y*Y) ** 1.5) - (a - res) * math.sin(ang)
 
     return [X1, ax, Y1, ay]
 
@@ -176,7 +171,7 @@ def free_flight(t, y):
     return [X1, ax, Y1, ay]
 
 
-y0 = [0, We * R, R, 0]  # Начальные условия
+y0 = [R, 0, 0, -We * R]  # Начальные условия
 t0 = 0
 
 f = ode(launch1)
