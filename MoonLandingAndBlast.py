@@ -20,9 +20,9 @@ dt = 0.01
 
 X, Y, R, V, A, T = [], [], [], [], [], []
 
-file = open('to3.txt').readlines() #'''to3 узнать у Леши'''
-data = array([[float(i) for i in file[j].split()] for j in range((len(file)))])
-x_Moon, y_Moon, x_ship, y_ship = data[0][0], data[0][1], data[0][2], data[0][3]
+file = open('FromEarthToMoonOut.txt').readlines()
+prev = array([[float(i) for i in file[j].split()] for j in range((len(file)))])
+x_Moon, y_Moon, x_ship, y_ship = ((prev[0][0])/1000), ((prev[0][1])/1000), ((prev[0][2])/1000), ((prev[0][3])/1000)
 
 def change_coordinates (x_Moon, y_Moon, x_ship, y_ship):
     New_x =(x_ship - x_Moon)*(y_Moon/sqrt(x_Moon**2 + y_Moon**2)) - (y_ship - y_Moon)*(x_Moon/sqrt(x_Moon**2 + y_Moon**2))
@@ -202,7 +202,7 @@ for i in range(39):
     x[i] = random.randint(-2000, 2000)
     y[i] = random.randint(-2000, 2000)
 
-plt.plot(x, y, marker="*", c="white", linestyle=" ")
+plt.plot(x, y, marker="*", c="lightsteelblue", linestyle=" ")
 plt.plot(list(X), list(Y), marker = "*", c="lightcoral", markersize=0.1)
 plt.xlabel("Координата x, км")
 plt.ylabel("Координата y, км")
@@ -219,7 +219,7 @@ for i in range(39):
     x[i] = random.randint(0, 4000)
     y[i] = random.randint(1738, 1800)
 
-plt.plot(x, y, marker="*", c="white", linestyle=" ")
+plt.plot(x, y, marker="*", c="lightsteelblue", linestyle=" ")
 plt.plot(list(T), list(R), marker = "*", c = "mediumvioletred", markersize=0.1)
 plt.ylabel("Расстояние до поверхности луны, км")
 plt.xlabel("Время, c")
@@ -233,7 +233,7 @@ y = zeros(39)
 for i in range(39):
     x[i] = random.randint(0, 4000)
     y[i] = random.randint(0, 3000000)
-plt.plot(x, y, marker="*", c="white", linestyle=" ")
+plt.plot(x, y, marker="*", c="powderblue", linestyle=" ")
 plt.plot(list(T), list(V), marker = "*", c = "olive", markersize=0.1)
 plt.ylabel('Скорость, м/с ')
 plt.xlabel("Время, с")
@@ -271,13 +271,13 @@ def go(x_0, y_0):
     while sqrt(x ** 2 + y ** 2)  <= 1740000:
         i += 1
         ready_steady(90 - i)
-    while sqrt(x ** 2 + y ** 2) <= 1748150:
+    while sqrt(x ** 2 + y ** 2) <= 1748100:
         ready_steady(38)
     i = 0
-    while sqrt(x ** 2 + y ** 2) <= 1763900:
+    while sqrt(x ** 2 + y ** 2) <= 1764100:
         i += 0.25
         ready_steady(38-i)
-    while sqrt(x ** 2 + y ** 2) <= 1788300:
+    while sqrt(x ** 2 + y ** 2) <= 1788500:
         ready_steady((acos(y/sqrt(x ** 2 + y ** 2)))*(180/pi))
     i=0
     while i<30:
@@ -307,7 +307,7 @@ def drawing(X, Y, R, V, T ):
         x[i] = random.randint(0, 500)
         y[i] = random.randint(0, 2000)
 
-    plt.plot(x, y, marker="*", c="white", linestyle=" ")
+    plt.plot(x, y, marker="*", c="lightsteelblue", linestyle=" ")
     plt.plot(list(T), list(V), marker="*", c="lightcoral", markersize=0.1)
     plt.xlabel("Время, с")
     plt.ylabel("Скорость, м/с")
@@ -325,7 +325,7 @@ def drawing(X, Y, R, V, T ):
         x[i] = random.randint(0, 500)
         y[i] = random.randint(1738, 1800)
 
-    plt.plot(x, y, marker="*", c="white", linestyle=" ")
+    plt.plot(x, y, marker="*", c="lightsteelblue", linestyle=" ")
     plt.plot(list(T), list(R), marker="*", c="darkturquoise", markersize=0.1)
     plt.xlabel("Время, с")
     plt.ylabel("Высота, км")
@@ -341,19 +341,17 @@ y_lk = R_orbit * cos(position_of_lk / R_orbit)
 x_lk = - R_orbit * sin(position_of_lk / R_orbit)
 
 print("Чилим на луне 1,76 часа ♫ ℂℍℐℒℒ ♫")
-tau = 6410
 
 def vzlet():
+    tau = 6410
     position_of_lk1 = (decel_startco + V_orbit * (
-    ((R_orbit * (asin(-312103.97160517494 / R_orbit) + 2 * pi) - decel_startco) / V_orbit))) % (2 * pi * R_orbit)
+    ((R_orbit * (asin(-314074.3951 / R_orbit) + 2 * pi) - decel_startco) / V_orbit))) % (2 * pi * R_orbit)
     y_lk1 = R_orbit * cos(position_of_lk1 / R_orbit)
     x_lk1 = - R_orbit * sin(position_of_lk1 / R_orbit)
     go(0, R_Moon)
-    print("Местоположения раеты носителя на орбите. Момент стыковки: x =", round(x_lk1, 4), "y =", round(y_lk1, 4),
-          "Полное время =", round(t_overall+tau, 4))
+    print("Местоположения ракеты носителя на орбите. Момент стыковки: x =", round(x_lk1, 4), "y =", round(y_lk1, 4),
+          "Полное время =", round(t_overall+tau))
 
 
 vzlet()
 print ("Ура! Летим на землю!🌍")
-
-
