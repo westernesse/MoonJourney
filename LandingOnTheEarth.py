@@ -89,7 +89,7 @@ def f1(t, y):
          vv=y2*y2+y4*y4
          v = m.sqrt(vv)
          r = (y1**2+y3**2)**0.5
-         angle=tangage_angle(y1,y3)[0]
+         angle = m.pi/2 - tangage_angle(y1,y3)[0]
          Cy = tangage_angle(y1,y3)[1]
          p = rho(y1,y3)
          Q = (Cx*S*p*(v**2))/(2*TotalMass)
