@@ -292,7 +292,7 @@ def go(x_0, y_0):
     print("Место стыковки: x =", round(x, 4), "y =", round(y, 4), "Скорость на орбите: v =", round(
     V4, 4), "Высота орбиты =", round(H4, 4), "Масса топлива =", round(m_fuel_2, 4))
     Esc_moon = open("Escaping from moon.txt", 'w')
-    Esc_moon.write(str(x) + "\n" + str(y) + "\n" + str(sqrt(Vx ** 2 + Vy ** 2)) + "\n" + str(sqrt(x ** 2 + y ** 2))
+    Esc_moon.write(str(atan(x/y)) + "\n" + str(sqrt(Vx ** 2 + Vy ** 2)) + "\n" + str(sqrt(x ** 2 + y ** 2))
                    + "\n" + str(t_overall + 6851 + FullT))
     Esc_moon.close()
     drawing(X, Y, R, V, T)
