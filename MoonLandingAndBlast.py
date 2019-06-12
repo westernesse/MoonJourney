@@ -5,6 +5,7 @@ import matplotlib.transforms as trns
 import pylab
 from numpy import *
 import random
+import os
 
 G = 6.67e-11  # Гравитационная постоянная
 M_Moon = 7.36e22  # Масса Луны
@@ -325,6 +326,7 @@ def drawing(X, Y, R, V, T ):
     pylab.xlim(-100, 350)
     pylab.ylim(1650, 1790)
     plt.grid(False)
+    plt.rcParams['examples.directory'] = os.getcwd()
     image_data = cbook.get_sample_data('rocket.png')
     image = plt.imread(image_data)
     im = ax.imshow(image, origin='lower', extent=[320, 327, 1752, 1771])
