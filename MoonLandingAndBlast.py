@@ -325,7 +325,7 @@ def drawing(X, Y, R, V, T ):
     pylab.xlim(-100, 350)
     pylab.ylim(1650, 1790)
     plt.grid(False)
-    image_data = cbook.get_sample_data('C:\\Users\\Марина\\MoonJourney\\rocket.png')
+    image_data = cbook.get_sample_data('rocket.png')
     image = plt.imread(image_data)
     im = ax.imshow(image, origin='lower', extent=[320, 327, 1752, 1771])
     trans_data = trns.Affine2D().rotate_deg_around(324, 1762, 75) + ax.transData
