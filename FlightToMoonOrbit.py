@@ -9,6 +9,7 @@ import numpy as np
 from scipy.integrate import ode
 import matplotlib.pyplot as plt
 import math as ms
+import random
 f=np.loadtxt("BlastOffFromEarth.txt",delimiter=' ', dtype=np.float)
 out=open('FromEarthtoMoonOut.txt','w')
 dm, W, h, t_pr, phi =f
@@ -137,11 +138,30 @@ for i in range(len(ts)):
 
 def circle(x,r):
     return np.array(np.sqrt(r**2-x**2))
-plt.figure()
-plt.plot(xs,ys)
-plt.plot(xm,ym)
+
+plt.style.use('dark_background')
+fig, ax = plt.subplots()
+
+xc,yc=[],[]
+for i in range(0, 630):
+    xc.append(6371000*ms.cos(i/100))
+    yc.append(6371000*ms.sin(i/100))
+plt.plot(xc,yc,linewidth=2, c = 'olive')
+
+x = np.zeros(39)
+y = np.zeros(39)
+for i in range(39):
+    x[i] = random.randint(-50000000, 400000000)
+    y[i] = random.randint(-50000000, 310000000)
+plt.plot(x, y, marker="*", c="lightsteelblue", linestyle=" ")
+
 plt.axis('equal')
-plt.grid(True)
+plt.plot(xs,ys, marker="*", c="#A589EB", markersize=0.1)
+plt.plot(xm,ym, marker="*", c="#EB91BA", markersize=0.1)
+plt.xlabel("X, м")
+plt.ylabel("Y, м")
+ax.set_title("Траектория перелёта")
+plt.grid(False)
 plt.show()
 
 t3=1303 #Время до начала торможения
@@ -201,13 +221,27 @@ xb1=np.linspace(-rm,rm,500)
 yb1=circle(xb1,rm)
 
 #Визуализация траектории относительно Луны
-plt.figure()
-plt.plot(xs1,ys1)
-plt.plot(xb1,yb1,color='black')
-plt.plot(xb1,-yb1,color='grey')
+plt.style.use('dark_background')
+fig, ax = plt.subplots()
+
+x = np.zeros(39)
+y = np.zeros(39)
+for i in range(39):
+    x[i] = random.randint(-2500000, 3200000)
+    y[i] = random.randint(-2500000, 2100000)
+plt.plot(x, y, marker="*", c="lightsteelblue", linestyle=" ")
+
 plt.axis('equal')
-plt.grid(True)
+plt.plot(xs1,ys1, c="#80FFFF", linewidth=0.5)
+plt.plot(xb1,yb1, c="bisque", linewidth=1)
+plt.plot(xb1,-yb1, c="bisque", linewidth=1)
+plt.xlabel("X, м")
+plt.ylabel("Y, м")
+ax.set_title("Траектория вблизи Луны")
+plt.grid(False)
 plt.show()
+
+
 
 x_m=r0*ms.sin(Y[-1][4])
 y_m=r0*ms.cos(Y[-1][4])
