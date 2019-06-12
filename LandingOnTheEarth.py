@@ -11,7 +11,7 @@ vx0 = arr[1] # (mu/(h+R_Earth))**0.5 скорость по орбите
 vy0 = arr[2] #0
 #print(h,vx0,vy0)
 
-G=6.67e-11
+max_overload = 0
 totalTime=0
 overload = []
 g_Earth = 9.81
@@ -22,17 +22,19 @@ mu = 398600*10**9
 Cx = 0.85
 Cy0 = 0.134*0.85
 
-TotalMass=5500
+TotalMass = 5500
+F = True
 
 result = open('landing Earth.txt', 'w')
 result.close()
 
-def Safety(F1, F2, F3):
-    np = (F1**2 + F2**2 + F3**2)**0.5/(TotalMass*g_Earth) #в относительных единицах
+def Safety(F1, F2, F3, F):
+    np = (F1**2 + F2**2 + F3**2)**0.5/g_Earth #в относительных единицах
     if np>=10:
         print ("Pilot is dead ;C ", np)
+        F = False
     overload.append(np)
-    return -1
+    return F
 
 
 def fout1(t, y):# обработчик шага 
@@ -83,26 +85,27 @@ def tangage_angle(x,y):
         
 # функция правых частей системы ОДУ
 def f1(t, y):
-         global TotalMass    
-         y1, y2, y3, y4 = y
-         result = open('landing Earth.txt', 'a')         
-         vv=y2*y2+y4*y4
-         v = m.sqrt(vv)
-         r = (y1**2+y3**2)**0.5
-         angle = m.pi/2 - tangage_angle(y1,y3)[0]
-         Cy = tangage_angle(y1,y3)[1]
-         p = rho(y1,y3)
-         Q = (Cx*S*p*(v**2))/(2*TotalMass)
-         N = (Cy*S*p*(v**2))/(2*TotalMass)
-         Py = N*m.cos(angle)
-         Pz = N*m.sin(angle)
-         Safety(Q, Py, Pz)
-         ax = -Q*(y2/v) - Py*(y4/v) - (mu/r**2)*y1/r
-         ay = -Q*(y4/v) + Py*(y2/v) - (mu/r**2)*y3/r 
-         result.write(str(r) + '\t' + str(m.sqrt(vv)) + '\t' +
-                      str(m.sqrt(ax**2 +ay**2)) + '\t' + str(t) + '\n')
-         result.close()
-         return [y2, ax, y4, ay] 
+         global TotalMass, max_overload, F    
+         if F:
+             y1, y2, y3, y4 = y
+             result = open('landing Earth.txt', 'a')         
+             vv = y2*y2 + y4*y4
+             v = m.sqrt(vv)
+             r = (y1**2 + y3**2)**0.5
+             angle = tangage_angle(y1,y3)[0]
+             Cy = tangage_angle(y1,y3)[1]
+             p = rho(y1,y3)
+             Q = (Cx*S*p*(v**2))/(2*TotalMass)
+             N = (Cy*S*p*(v**2))/(2*TotalMass)
+             Py = N*m.cos(angle)
+             Pz = N*m.sin(angle)
+             F = Safety(Q, Py, Pz, F)
+             ax = -Q*(y2/v) - Py*(y4/v) - (mu/r**2)*y1/r
+             ay = -Q*(y4/v) + Py*(y2/v) - (mu/r**2)*y3/r 
+             result.write(str(r) + '\t' + str(m.sqrt(vv)) + '\t' +
+                          str(m.sqrt(ax**2 +ay**2)) + '\t' + str(t) + '\n')
+             result.close()
+             return [y2, ax, y4,ay] 
      
 x_start = 0
 Vx_start = vx0
@@ -115,7 +118,7 @@ for i in range(90, 159):
     yc.append(0.001*R_Earth*m.sin(i/100))
 tmax = 100000
     
-y0,t0=[x_start,  Vx_start, y_start, Vy_start], 0 # начальные условия 
+y0,t0 = [x_start,  Vx_start, y_start, Vy_start], 0 # начальные условия 
 ODE=ode(f1)
 ODE.set_integrator('dopri5')
 ODE.set_solout(fout1)
@@ -126,6 +129,22 @@ Y=np.array(ys)
 xgraph = Y[:,0]/1000
 ygraph = Y[:,2]/1000
 
+
+print()
+print('Конечная высота ',"%.3f" % (m.sqrt(Y[-1:,0]**2 + Y[-1:,2]**2) - R_Earth),'м')
+print('Конечная скорость ', "%.3f" % (m.sqrt(Y[-1:,1]*Y[-1:,1] + Y[-1:,3]*Y[-1:,3])),'м/с')
+totalTime += ts[-1]
+print('Полное время снижения в атмосфере ', "%.0f" %totalTime,'с')
+max_overload = max(overload)
+print ('Максимальная перегрузка ', "%.1f" %max_overload, 'g')
+
+end = open('FinalData.txt', 'w')
+end.write('Конечная высота '+ str(round(m.sqrt(Y[-1:,0]**2 + Y[-1:,2]**2) - R_Earth)) +' м \n' +
+          'Конечная скорость '+ str(round(m.sqrt(Y[-1:,1]*Y[-1:,1] + Y[-1:,3]*Y[-1:,3]))) +' м/с \n'+
+          'Полное время снижения в атмосфере '+ str(round(totalTime)) +' с \n' +
+          'Максимальная перегрузка ' + str(round(max_overload,1)) + ' g \n' +
+          'Ура! Мы вернулись на Землю!')
+end.close()
 plt.style.use('dark_background')
 plt.title("Торможение в атмосфере \n ")
 x = np.zeros(39)
@@ -164,7 +183,7 @@ for i in range(len(Y[:,2])):
 
 plt.figure(2)
 plt.subplot(131)
-plt.title("Высота над поверхностью земли \n ")
+plt.title("Высота над поверхностью земли \n")
 plt.xlabel('Время, с')
 plt.ylabel('Высота, км')
 plt.plot(ts[::],dataa,c='plum',linewidth=3)
@@ -175,16 +194,7 @@ for i in range(len(Y[:,1])):
  
 plt.subplot(133)
 plt.plot(ts[::],speeds,c='plum',linewidth=3)
-plt.title("Скорость КО \n ")
+plt.title("Скорость КО \n")
 plt.xlabel('Время, с')
 plt.ylabel('Скорость, м/с')
 plt.show()  
-
-print()
-print('Final height is ',"%.3f" % (m.sqrt(Y[-1:,0]**2 +Y[-1:,2]**2) - R_Earth))
-vx = Y[-1:,1]
-vy = Y[-1:,3]
-v = m.sqrt(vx*vx + vy*vy)
-print('Final velocity is ', "%.3f" % v)
-totalTime+=ts[-1]
-print('Total time is ', "%.0f" %  totalTime)
