@@ -215,9 +215,9 @@ f.integrate(10000)
 x, vx, y, vy = y3
 dm = (M3_fuel - force3/f_vel3 * (t3 - t2)) / M3_fuel
 h = math.sqrt(x**2 + y**2)
-nx, ny = math.cos(math.atan(x/y)), math.sin(math.atan(x/y))
-w = math.sqrt(vx**2 + vy**2 - (ny * vx + nx * vy)**2) / h
-phi = math.atan(x/y)
+nx, ny = math.cos(math.atan(-y/x)), math.sin(math.atan(-y/x))
+w = math.sqrt((ny * vx + nx * vy)**2) / h
+phi = math.atan(-y/x)
 f = open("BlastOffFromEarth.txt", 'w')
 print(dm, w, h, t3, phi, file=f)
 f.close()
