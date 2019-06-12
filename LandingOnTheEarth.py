@@ -12,8 +12,6 @@ vy0 = arr[2] #0
 #print(h,vx0,vy0)
 
 max_overload = 0
-
-G=6.67e-11
 totalTime=0
 overload = []
 g_Earth = 9.81
@@ -91,9 +89,9 @@ def f1(t, y):
          if F:
              y1, y2, y3, y4 = y
              result = open('landing Earth.txt', 'a')         
-             vv=y2*y2+y4*y4
+             vv = y2*y2 + y4*y4
              v = m.sqrt(vv)
-             r = (y1**2+y3**2)**0.5
+             r = (y1**2 + y3**2)**0.5
              angle = tangage_angle(y1,y3)[0]
              Cy = tangage_angle(y1,y3)[1]
              p = rho(y1,y3)
@@ -120,7 +118,7 @@ for i in range(90, 159):
     yc.append(0.001*R_Earth*m.sin(i/100))
 tmax = 100000
     
-y0,t0=[x_start,  Vx_start, y_start, Vy_start], 0 # начальные условия 
+y0,t0 = [x_start,  Vx_start, y_start, Vy_start], 0 # начальные условия 
 ODE=ode(f1)
 ODE.set_integrator('dopri5')
 ODE.set_solout(fout1)
@@ -135,7 +133,7 @@ ygraph = Y[:,2]/1000
 print()
 print('Конечная высота ',"%.3f" % (m.sqrt(Y[-1:,0]**2 + Y[-1:,2]**2) - R_Earth),'м')
 print('Конечная скорость ', "%.3f" % (m.sqrt(Y[-1:,1]*Y[-1:,1] + Y[-1:,3]*Y[-1:,3])),'м/с')
-totalTime+=ts[-1]
+totalTime += ts[-1]
 print('Полное время снижения в атмосфере ', "%.0f" %totalTime,'с')
 max_overload = max(overload)
 print ('Максимальная перегрузка ', "%.1f" %max_overload, 'g')
