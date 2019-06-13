@@ -13,7 +13,7 @@ R_Moon = 1738000  # Радиус луны
 m_ship = 6835 #(пс+вс)лм
 m_lm = 2315
 m_fuel_1 = 8165
-m_fuel_2 = 2335
+m_fuel_2 = 2355
 F_1 = 45040
 F_2 = 15600
 h_0_Moon = 2
@@ -85,9 +85,9 @@ def after_impulse(x_ship_orbit, y_ship_orbit, mfuel = m_fuel_1): # скорос�
     decel_startco = current_position(x, y, R_orbit)
     rocket_co = current_position(x_ship_orbit, y_ship_orbit, R_orbit)
     if decel_startco >= rocket_co:
-        t_init = (decel_startco - rocket_co) / V_orbit
+        t_1stage = (decel_startco - rocket_co) / V_orbit
     else:
-        t_init = (decel_startco + 2 * pi * R_orbit - rocket_co) / V_orbit
+        t_1stage = (decel_startco + 2 * pi * R_orbit - rocket_co) / V_orbit
     time = 0
     vx = - (V_orbit*y)/R_orbit
     vy = (V_orbit*x)/R_orbit
@@ -100,9 +100,9 @@ def after_impulse(x_ship_orbit, y_ship_orbit, mfuel = m_fuel_1): # скорос�
         time += dt
         X.append(x/1000), Y.append(y/1000), R.append(sqrt(x ** 2 + y ** 2)/1000), V.append(vx ** 2 + vy ** 2)
         A.append(sqrt(ax ** 2 + ay ** 2)), T.append(time)
-    return mfuel, vx, vy, x, y, t_init, time, decel_startco
+    return mfuel, vx, vy, x, y, t_1stage, time, decel_startco
 
-mfuel_aftdecel, vx, vy, x, y, t_init, time, decel_startco = after_impulse(new_x, new_y)
+mfuel_aftdecel, vx, vy, x, y, t_1stage, time, decel_startco = after_impulse(new_x, new_y)
 
 print('Конец торможения, начало свободного полёта')
 print("x =", round(x, 4), "y =", round(-y, 4), "Vx =", round(vx, 4), "Vy =", round(-vy, 4), "масса топлива =",
@@ -177,17 +177,17 @@ def vertical_stop(x, y, vx, vy, mfuel, time):  # вертикальная пос
     return x, y, vx, vy, mfuel, time
 
 print('Успешная посадка ⚐')
-x_3, y_3, vx_3, vy_3, mfuel_3, t_new = vertical_stop(x_2, y_2, vx_2, vy_2, mfuel_2, time)
+x_3, y_3, vx_3, vy_3, mfuel_3, t_2stage = vertical_stop(x_2, y_2, vx_2, vy_2, mfuel_2, time)
 print("Место прилунения: x =", round(x_3, 4), "y =", round(-y_3, 4), "Скорость при посадке: v_x =", round(
     vx_3, 4),  "v_y =", round(-vy_3, 4), "Масса топлива =", round(mfuel_3, 4))
 
-t_overall = t_init + t_new
-position_of_lk = (decel_startco + V_orbit * t_new)% (2 * pi * R_orbit)
+t_landing = t_1stage + t_2stage
+position_of_lk = (decel_startco + V_orbit * t_2stage)% (2 * pi * R_orbit)
 y_lk = R_orbit * cos(position_of_lk / R_orbit)
 x_lk = - R_orbit * sin(position_of_lk / R_orbit)  # местоположение ракеты после посадки
 
-print("Местоположения раеты носителя на орбите: x =", round(x_lk, 4), "y =", round(-y_lk, 4), "Полное время =", round(
-    t_overall, 4))
+print("Местоположения ракеты носителя на орбите: x =", round(x_lk, 4), "y =", round(-y_lk, 4), "Полное время =", round(
+    t_landing + FullT, 4))
 
 
 plt.style.use('dark_background')
@@ -213,9 +213,11 @@ ax.set_title("Траектория ракеты вблизи луны")
 pylab.xlim(-2000, 2000)
 pylab.ylim(-2000, 2000)
 plt.grid(False)
+plt.savefig("Moon1.png", dpi=300)
 plt.show()
 
 fig, ax = plt.subplots()
+
 x = zeros(39)
 y = zeros(39)
 for i in range(39):
@@ -228,9 +230,11 @@ plt.ylabel('Скорость, м/с ')
 plt.xlabel("Время, с")
 ax.set_title("Скорость ЛМ")
 plt.grid(False)
+plt.savefig("Moon2.png", dpi=300)
 plt.show()
 
 fig, ax = plt.subplots()
+
 x = zeros(39)
 y = zeros(39)
 for i in range(39):
@@ -243,14 +247,15 @@ plt.ylabel("Расстояние до поверхности луны, км")
 plt.xlabel("Время, c")
 ax.set_title("Расстояние от центра луны")
 plt.grid(False)
+plt.savefig("Moon3.png", dpi=300)
 plt.show()
 
-Vx, Vy, time = 0, 0, 0
+x, y, Vx, Vy, t_3stage = x_3, -y_3, 0, 0, 0
 X, Y, R, V, T = [], [], [], [], []
 
 def ready_steady(angle):
     dt = 1
-    global x, y, Vx, Vy, m_fuel_2, m_lm, Time, X, Y, R, V, T
+    global x, y, Vx, Vy, m_fuel_2, m_lm, t_3stage, X, Y, R, V, T
     gx = (G * M_Moon * x) / ((x ** 2 + y ** 2) ** 1.5)
     gy = (G * M_Moon * y) / ((x ** 2 + y ** 2) ** 1.5)
     m0 = m_lm + m_fuel_2
@@ -261,21 +266,21 @@ def ready_steady(angle):
     Vx = Vx + gx * dt - cos(radians(angle)) * Vr
     Vy = Vy - gy * dt - sin(radians(angle)) * Vr
     m_fuel_2 = m_fuel_2 - (F_2/u_fuel) * dt
-    Time += dt
+    t_3stage += dt
     X.append(x / 1000), Y.append(y / 1000), R.append(sqrt(x ** 2 + y ** 2) / 1000), V.append(sqrt(Vx ** 2 + Vy ** 2))
-    T.append(Time)
+    T.append(t_3stage)
 
 
 
 def go(x_0, y_0):
-    global x, y, Time, X, Y, R, V, T, m_fuel_2
-    Time, i = 0, 0
+    global x, y, t_3stage, X, Y, R, V, T, m_fuel_2
+    t_3stage, i = 0, 0
     x = x_0
     y = y_0
     while sqrt(x ** 2 + y ** 2)  <= 1740000:
         i += 1
         ready_steady(90 - i)
-    while sqrt(x ** 2 + y ** 2) <= 1748100:
+    while sqrt(x ** 2 + y ** 2) <= 1748000:
         ready_steady(38)
     i = 0
     while sqrt(x ** 2 + y ** 2) <= 1764100:
@@ -284,20 +289,20 @@ def go(x_0, y_0):
     while sqrt(x ** 2 + y ** 2) <= 1788500:
         ready_steady((acos(y/sqrt(x ** 2 + y ** 2)))*(180/pi))
     i=0
-    while i<30:
+    while i<35:
         i+=1
         ready_steady(270)
     i=0
-    while i < 6:
+    while i < 1:
         i += 1
-        ready_steady(180)
+        ready_steady(0)
     V4 = sqrt(Vx ** 2 + Vy ** 2)
     H4 = sqrt(x ** 2 + y ** 2)
     print("Место стыковки: x =", round(x, 4), "y =", round(y, 4), "Скорость на орбите: v =", round(
     V4, 4), "Высота орбиты =", round(H4, 4), "Масса топлива =", round(m_fuel_2, 4))
     Esc_moon = open("Escaping from moon.txt", 'w')
     Esc_moon.write(str(atan(x/y)) + "\n" + str(sqrt(Vx ** 2 + Vy ** 2)) + "\n" + str(sqrt(x ** 2 + y ** 2))
-                   + "\n" + str(t_overall + 6851 + FullT))
+                   + "\n" + str(t_landing + 3202 + FullT))
     Esc_moon.close()
     drawing(X, Y, R, V, T)
     return (V4, H4, m_fuel_2)
@@ -315,7 +320,7 @@ def drawing(X, Y, R, V, T ):
     x = zeros(39)
     y = zeros(39)
     for i in range(39):
-        x[i] = random.randint(-100, 350)
+        x[i] = random.randint(-75, 365)
         y[i] = random.randint(1650, 1790)
     plt.plot(x, y, marker="*", c="lightsteelblue", linestyle=" ")
 
@@ -323,19 +328,21 @@ def drawing(X, Y, R, V, T ):
     plt.xlabel("Координата x, км")
     plt.ylabel("Координата y, км")
     ax.set_title("Траектория ракеты вблизи луны")
-    pylab.xlim(-100, 350)
+    pylab.xlim(-75, 365)
     pylab.ylim(1650, 1790)
     plt.grid(False)
     plt.rcParams['examples.directory'] = os.getcwd()
     image_data = cbook.get_sample_data('rocket.png')
     image = plt.imread(image_data)
-    im = ax.imshow(image, origin='lower', extent=[320, 327, 1752, 1771])
-    trans_data = trns.Affine2D().rotate_deg_around(324, 1762, 75) + ax.transData
+    im = ax.imshow(image, origin='lower', extent=[327, 335, 1749, 1772])
+    trans_data = trns.Affine2D().rotate_deg_around(333, 1761, 75) + ax.transData
     im.set_transform(trans_data)
+    plt.savefig("Moon4.png", dpi=300)
     plt.show()
 
     plt.style.use('dark_background')
     fig, ax = plt.subplots()
+
     x = zeros(39)
     y = zeros(39)
     for i in range(39):
@@ -350,10 +357,12 @@ def drawing(X, Y, R, V, T ):
     pylab.xlim(0, 500)
     pylab.ylim(0, 2000)
     plt.grid(False)
+    plt.savefig("Moon5.png", dpi=300)
     plt.show()
 
     plt.style.use('dark_background')
     fig, ax = plt.subplots()
+
     x = zeros(39)
     y = zeros(39)
     for i in range(39):
@@ -368,24 +377,26 @@ def drawing(X, Y, R, V, T ):
     pylab.xlim(0, 500)
     pylab.ylim(1738, 1800)
     plt.grid(False)
+    plt.savefig("Moon6.png", dpi=300)
     plt.show()
 
-t_overall = t_init + t_new
-position_of_lk = (decel_startco + V_orbit * t_new) % (2 * pi * R_orbit)
+t_landing = t_1stage + t_2stage
+position_of_lk = (decel_startco + V_orbit * t_2stage) % (2 * pi * R_orbit)
 y_lk = R_orbit * cos(position_of_lk / R_orbit)
 x_lk = - R_orbit * sin(position_of_lk / R_orbit)
 
-print("Чилим на луне 50 минут ♫ ℂℍℐℒℒ ♫")
+
 
 def vzlet():
-    tau = 3450
     position_of_lk1 = (decel_startco + V_orbit * (
-    ((R_orbit * (asin(-314074.3951 / R_orbit) + pi) - decel_startco) / V_orbit))) % (2 * pi * R_orbit)
+    ((R_orbit * (asin(-319716.9245 / R_orbit) + 3*pi) - decel_startco) / V_orbit))) % (2 * pi * R_orbit)
+    t_blast = (R_orbit * (asin(-319716.9245 / R_orbit) + 3*pi) - decel_startco) / V_orbit
     y_lk1 = R_orbit * cos(position_of_lk1 / R_orbit)
     x_lk1 = R_orbit * sin(position_of_lk1 / R_orbit)
     go(0, R_Moon)
+    print("Чилим на луне", round((t_blast - t_3stage)/60),"минут ♫ ℂℍℐℒℒ ♫")
     print("Местоположения ракеты носителя на орбите. Момент стыковки: x =", round(x_lk1, 4), "y =", round(-y_lk1, 4),
-          "Полное время =", round(t_overall+tau))
+          "Полное время =", round(t_landing+t_blast+FullT))
 
 
 vzlet()
