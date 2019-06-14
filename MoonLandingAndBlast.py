@@ -67,7 +67,7 @@ def desired_x(x=0, y=R_orbit, vx=-V_orbit, vy=0):  # место начала т�
     x_i = x
     y_i = y
     vy_i = vy
-    while height > R_Moon + ((y_i - R_Moon) / 2):  # ((y_probe - rad) * 0.95):
+    while height > R_Moon + ((y_i - R_Moon) / 2):
         speed += 0.1
         x = x_i
         y = y_i
@@ -243,7 +243,7 @@ for i in range(39):
 plt.plot(x, y, marker="*", c="lightsteelblue", linestyle=" ")
 
 plt.plot(list(T), list(R), marker = "*", c = "mediumvioletred", markersize=0.1)
-plt.ylabel("Расстояние до поверхности луны, км")
+plt.ylabel("Расстояние до поверхности Луны, км")
 plt.xlabel("Время, c")
 ax.set_title("Расстояние от центра луны")
 plt.grid(False)
